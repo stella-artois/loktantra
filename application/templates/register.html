@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block body %}
+  <h2>Sign Up</h2>
+  {% if error %}<div class=error><strong>Error:</strong> {{ error }}</div>{% endif %}
+  <form action="" method=post>
+    <dl>
+      <dt>Full Name:
+      <dd><input type=text name=full_name size=30 value="{{ request.form.full_name }}">
+      <dt>Date of Birth:
+      <dd><input type=date name=birth_date size=30 value="{{ request.form.birth_date }}">
+      <dt>Aadhar Card Number:
+      <dd><input type=text name=aadhar_number size=30 value="{{ request.form.aadhar_number }}">
+      <dt>State:
+      <dd><input type=text name=state size=30 value="{{ request.form.state }}">
+      <dt>City:
+      <dd><input type=text name=city size=30 value="{{ request.form.city }}">
+      <dt>Username:
+      <dd><input type=text name=username size=30 value="{{ request.form.username }}">
+      <dt>E-Mail:
+      <dd><input type=text name=email size=30 value="{{ request.form.email }}">
+      <dt>Password:
+      <dd><input type=password name=password size=30>
+      <dt>Password <small>(repeat)</small>:
+      <dd><input type=password name=password2 size=30>
+    </dl>
+    <div class=actions><input type=submit value="Sign Up"></div>
+  </form>
+  <a href={{ url_for('register_department') }}>Register as a government affiliate.</a>
+{% endblock %}
