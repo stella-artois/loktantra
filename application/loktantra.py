@@ -293,12 +293,11 @@ def register():
         else:
             db = get_db()
             db.execute('''insert into user (
-                username, full_name, email, aadhar_number, birth_date, state, city, pw_hash)
-                values (?, ?, ?, ?, ?, ?, ?, ?)''',
+                username, full_name, email, birth_date, state, city, pw_hash)
+                values (?, ?, ?, ?, ?, ?, ?)''',
                 [request.form['username'],
                 request.form['full_name'],
                 request.form['email'],
-                request.form['aadhar_number'],
                 request.form['birth_date'],
                 request.form['state'],
                 request.form['city'],
