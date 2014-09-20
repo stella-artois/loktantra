@@ -196,15 +196,39 @@ def plus_one():
     message_id = int(request.args.get('message_id'))
     user_id = session['user_id']
     db = get_db()
-    message_utils.plus_one_message(db, message_id, user_id)
+    if message_utils.is_upvoted(db, message_id, user_id):
+      message_utils.minus_one_message(db, message_id, user_id)
+    else:
+      message_utils.plus_one_message(db, message_id, user_id)
     return jsonify(result=len(message_utils.get_plus_ones(db, message_id)))
 
 @app.route('/_add_comment')
-def add_comment(message_id, text):
+def add_comment():
     """Returns JSON response of added comment."""
+    message_id = int(request.args.get('message_id'))
+    text = request.args.get('text')
     user_id = session['user_id']
     db = get_db()
     return jsonify(result=message_utils.make_comment(db, message_id, user_id, text))
+
+@app.route('/_set_comments')
+def set_comments():
+    message_id = int(request.args.get('message_id'))
+    user_id = session['user_id']
+    db = get_db()
+    return jsonify(result=message_utils.get_comments(db, message_id, user_id))
+
+@app.route('/_set_upvote_classes')
+def set_upvote_classes():
+  user_id = int(session['user_id'])
+  message_id = int(request.args.get('message_id'))
+  db = get_db()
+  rows = db.execute('''select * from plus_one
+      where user_id=%d and message_id=%d''' % (user_id, message_id))
+  if rows.fetchone():
+    return jsonify(result=1)
+  else:
+    return jsonify(result=0)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

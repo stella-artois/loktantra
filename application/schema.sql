@@ -46,6 +46,12 @@ create table hashtag (
   text text not null
 );
 
+drop table if exists tracked_hashtag;
+create table tracked_hashtag (
+  department_id integer not null,
+  text text not null
+);
+
 drop table if exists plus_one;
 create table plus_one (
   message_id integer not null,

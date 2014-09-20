@@ -38,12 +38,31 @@ def plus_one_message(db, message_id, user_id):
       where message_id=%d and user_id=%d'''
       % (int(message_id), int(user_id)))
   if not plus_ones.fetchone():
-    sys.stderr.write("Here\n\nWTF!!\n")
     db.execute('''insert into plus_one (user_id, message_id) values (?, ?)''',
         [user_id, message_id])
     db.commit()
     db.execute('''update message set plus_one_count=plus_one_count+1
-        where message_id=%d''' % (message_id))
+        where message_id=%d''' % int(message_id))
+    db.commit()
+
+def minus_one_message(db, message_id, user_id):
+  """Responsible for minus oning a particular message.
+
+  Args:
+    message_id: message.message_id.
+    db: get_db() object.
+  Returns:
+    None.
+  """
+  plus_ones = db.execute('''select * from plus_one
+      where message_id=%d and user_id=%d'''
+      % (int(message_id), int(user_id)))
+  if plus_ones.fetchone():
+    db.execute('''delete from plus_one where user_id = %d
+        and message_id = %d''' % (int(user_id) ,int(message_id)))
+    db.commit()
+    db.execute('''update message set plus_one_count=plus_one_count-1
+        where message_id=%d''' % int(message_id))
     db.commit()
 
 def make_comment(db, message_id, user_id, text):
@@ -58,7 +77,43 @@ def make_comment(db, message_id, user_id, text):
     text: The content of the message. This is to ensure that
       only db committed messages are rendered.
   """
-  db.execute('''insert into table comment (user_id, message_id, text)
+  db.execute('''insert into comment (user_id, message_id, text)
       values (?, ?, ?)''', [user_id, message_id, text])
   db.commit()
   return text
+
+def get_comments(db, message_id, user_id):
+  """Returns the list of comments on a particular mudda by an user.
+
+  Args:
+    db: get_db() object.
+    message_id: message.message_id.
+
+  Returns:
+    List of comments posted in this message id.
+  """
+  message_rows = db.execute('''select * from comment
+      where message_id=%s and
+      user_id=%s''' % (message_id, user_id))
+  messages = []
+  row = message_rows.fetchone()
+  while row:
+    messages.append(row['text'])
+    row = message_rows.fetchone()
+  return messages
+
+def is_upvoted(db, message_id, user_id):
+  """Checks if a given message_id has been upvoted
+  by a given user_id.
+
+  Args:
+    message_id: message.message_id.
+    db: get_db() object.
+    user_id: user.user_id.
+
+  Returns:
+    bool.
+  """
+  rows = db.execute('''select * from plus_one where user_id = %s and
+  message_id = %s''' %(user_id, message_id))
+  return True if rows.fetchone() else False
