@@ -5,7 +5,6 @@ create table user (
   username text not null,
   email text not null,
   birth_date date not null,
-  aadhar_number integer not null,
   city text not null,
   state text not null,
   pw_hash text not null
@@ -49,7 +48,7 @@ create table hashtag (
 drop table if exists tracked_hashtag;
 create table tracked_hashtag (
   department_id integer not null,
-  text text not null
+  hashtag text not null
 );
 
 drop table if exists plus_one;
