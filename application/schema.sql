@@ -36,6 +36,7 @@ create table message (
   author_id integer not null,
   text text not null,
   plus_one_count integer default 0 not null,
+  location text not null,
   pub_date integer
 );
 

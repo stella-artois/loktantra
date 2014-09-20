@@ -174,9 +174,12 @@ def add_message():
         abort(401)
     if request.form['text']:
         db = get_db()
-        db.execute('''insert into message (author_id, text, pub_date)
-          values (?, ?, ?)''', (session['user_id'], request.form['text'],
-                                int(time.time())))
+        db.execute('''insert into message (author_id, text, location, pub_date)
+            values (?, ?, ?, ?)''',
+            (session['user_id'],
+            request.form['text'],
+            request.form['location'],
+            int(time.time())))
         db.commit()
         messages = db.execute('''select message_id from message where
             author_id = %s order by pub_date''' % (session['user_id']))
