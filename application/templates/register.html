@@ -2,29 +2,74 @@
 {% block title %}Sign Up{% endblock %}
 {% block body %}
   <h2>Sign Up</h2>
-  {% if error %}<div class=error><strong>Error:</strong> {{ error }}</div>{% endif %}
-  <form action="" method=post>
-    <dl>
-      <dt>Full Name:
-      <dd><input type=text name=full_name size=30 value="{{ request.form.full_name }}">
-      <dt>Date of Birth:
-      <dd><input type=date name=birth_date size=30 value="{{ request.form.birth_date }}">
-      <dt>Aadhar Card Number:
-      <dd><input type=text name=aadhar_number size=30 value="{{ request.form.aadhar_number }}">
-      <dt>State:
-      <dd><input type=text name=state size=30 value="{{ request.form.state }}">
-      <dt>City:
-      <dd><input type=text name=city size=30 value="{{ request.form.city }}">
-      <dt>Username:
-      <dd><input type=text name=username size=30 value="{{ request.form.username }}">
-      <dt>E-Mail:
-      <dd><input type=text name=email size=30 value="{{ request.form.email }}">
-      <dt>Password:
-      <dd><input type=password name=password size=30>
-      <dt>Password <small>(repeat)</small>:
-      <dd><input type=password name=password2 size=30>
+
+
+         <div class="login">
+        <div class="login-screen2">
+{% if error %}<div class=error><strong>Error:</strong> {{ error }}</div>{% endif %}
+<div class="row" style="padding-top:40px;"> 
+        <div class="col-md-1"></div>
+          <div class="login-form col-md-4">
+            <div class="form-group">
+              <input type="text" class="form-control login-field" value="{{ request.form.full_name }}" placeholder="Enter your name" id="login-name" />
+              <label class="login-field-icon fui-user" for="login-name"></label>
+            </div>
+
+            <div class="form-group">
+              <input name=email type="text" class="form-control login-field" value="{{ request.form.email }}" placeholder="Enter your email ID" id="email-id" />
+              <label class="login-field-icon fui-user" for="login-name"></label>
+            </div>
+
+         <div class="form-group">
+              <input type="text" name=city class="form-control login-field" value="{{ request.form.city }}" placeholder="City of residence" id="city" />
+              <label class="login-field-icon fui-user" for="login-name"></label>
+            </div>
+
+        <div class="form-group">
+              <input type="text" class="form-control login-field" name=state value="{{ request.form.state }}" placeholder="State" id="state" />
+              <label class="login-field-icon fui-user" for="login-name"></label>
+            </div>
+ 
+                   </div> <!--login form-->
+
+        <div class="col-md-2"></div>
+
+            <div class="login-form col-md-4">
+            
+            <div class="form-group">
+              <input type="text" class="form-control login-field" name= username value="{{ request.form.username }}" placeholder="Desired Username" id="username" />
+              <label class="login-field-icon fui-user" for="login-name"></label>
+            </div>
+
+            <div class="form-group">
+              <input name=password type="password" class="form-control login-field" value="" placeholder="Password" id="login-pass" />
+              <label class="login-field-icon fui-lock" for="login-pass"></label>
+            </div>
+ <div class="form-group">
+              <input name=password2 type="password" class="form-control login-field" value="" placeholder="Password (repeat)" id="login-pass" />
+              <label class="login-field-icon fui-lock" for="login-pass"></label>
+            </div>
+    
+        <div class="form-group">
+              <input type="date" name=birth_date class="form-control login-field" value="{{ request.form.birth_date }}" placeholder="Date of Birth" id="dob" />
+              <label class="login-field-icon fui-user" for="login-name"></label>
+            </div>
+
+</div> 
+
+        <div class="col-md-4"></div>
+ </div>
+    
+ <div class = "row">
+ <div class= "col-xs-3"></div> 
+ <div class= "col-xs-6">
+ <br>
+  
+            <a class="btn btn-primary btn-lg btn-block" style="background-color:#16a085; " href="#">Submit</a>
+        <a href={{ url_for('register_department') }} style="text-align:center; display:block;">Register as a government affiliate instead.</a>
+ </div> 
+ </div>
+        
+      </div>
     </dl>
-    <div class=actions><input type=submit value="Sign Up"></div>
-  </form>
-  <a href={{ url_for('register_department') }}>Register as a government affiliate.</a>
 {% endblock %}
