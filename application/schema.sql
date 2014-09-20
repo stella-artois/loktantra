@@ -2,7 +2,6 @@ drop table if exists user;
 create table user (
   user_id integer primary key autoincrement,
   full_name text not null,
-  rep integer default 0 not null,
   username text not null,
   email text not null,
   birth_date date not null,
@@ -37,6 +36,7 @@ create table message (
   message_id integer primary key autoincrement,
   author_id integer not null,
   text text not null,
+  plus_one_count integer default 0 not null,
   pub_date integer
 );
 
@@ -44,4 +44,17 @@ drop table if exists hashtag;
 create table hashtag (
   message_id integer not null,
   text text not null
+);
+
+drop table if exists plus_one;
+create table plus_one (
+  message_id integer not null,
+  user_id integer not null
+);
+
+drop table if exists comment;
+create table comment (
+  text text not null,
+  user_id integer not null,
+  message_id integer not null
 );

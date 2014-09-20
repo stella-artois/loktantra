@@ -1,6 +1,15 @@
 <!doctype html>
 <title>{% block title %}Welcome{% endblock %} | LokTantra</title>
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+<script type=text/javascript src="{{
+  url_for('static', filename='jquery.min.js') }}">
+</script>
+
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{request.script_root|tojson|safe }};
+</script>
+  
+
 <div class=page>
   <h1>LokTantra</h1>
   <div class=navigation>

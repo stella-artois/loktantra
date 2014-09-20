@@ -7,6 +7,10 @@
   {% endif %}
 {% endblock %}
 {% block body %}
+  <h2>{{ profile_user.full_name }}</h2>
+  <p>Location: {{ profile_user.city }}, {{ profile_user.state }}</p>
+  <p>Number of muddas posted: {{ mudda_count }}</p>
+  <p>Reputation: {{ reputation }}</p>
   <h2>{{ self.title() }}</h2>
   {% if g.user %}
       <div class=followstatus>
