@@ -69,7 +69,10 @@
           </nav><!-- /navbar -->
         </div>
                                 
-
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{request.script_root|tojson|safe }};
+</script>
+  
   </div>
   {% with flashes = get_flashed_messages() %}
     {% if flashes %}

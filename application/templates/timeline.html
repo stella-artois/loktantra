@@ -1,31 +1,10 @@
 {% extends "layout.html" %}
 {% block title %}
-  {% if request.endpoint == 'public_timeline' %}
     Public Timeline
-  {% elif request.endpoint == 'user_timeline' %}
-    {{ profile_user.username }}'s Timeline
-  {% else %}
-    My Timeline
-  {% endif %}
 {% endblock %}
 {% block body %}
   <h2>{{ self.title() }}</h2>
   {% if g.user %}
-    {% if request.endpoint == 'user_timeline' %}
-      <div class=followstatus>
-      {% if g.user.user_id == profile_user.user_id %}
-        This is you!
-      {% elif followed %}
-        You are currently following this user.
-        <a class=unfollow href="{{ url_for('unfollow_user', username=profile_user.username)
-          }}">Unfollow user</a>.
-      {% else %}
-        You are not yet following this user.
-        <a class=follow href="{{ url_for('follow_user', username=profile_user.username)
-          }}">Follow user</a>.
-      {% endif %}
-      </div>
-    {% elif request.endpoint == 'timeline' %}
       <div class=twitbox>
         <h3>What's on your mind {{ g.user.username }}?</h3>
         <form action="{{ url_for('add_message') }}" method=post>
@@ -33,7 +12,6 @@
           --><input type=submit value="Share">
         </form>
       </div>
-    {% endif %}
   {% endif %}
   <ul class=messages>
   {% for message in messages %}
@@ -41,9 +19,28 @@
       <strong><a href="{{ url_for('user_timeline', username=message.username)
       }}">{{ message.username }}</a></strong>
       {{ message.text }}
-      <small>&mdash; {{ message.pub_date|datetimeformat }}</small>
-  {% else %}
-    <li><em>There's no message so far.</em>
+      {% if g.user %}
+        <small>&mdash; {{ message.pub_date|datetimeformat }}</small>
+        <input type="hidden" value="{{ message.message_id }}" name ="{{ "message_" ~ message.message_id }}">
+        <input type="submit" name="submit" value="Plus One" onclick="plus_one({{ message.message_id }})">
+      {% endif %}
+      <span id={{"plus_one_count_" ~ message.message_id }}> {{ message.plus_one_count }} </span> Plus Ones
   {% endfor %}
+  {% if not messages %}
+    <li><em>There's no message so far.</em>
+  {% endif %}
   </ul>
+
+  <script type="text/javascript" >
+    function plus_one(message_id) {
+      console.log("Hello");
+      console.log(message_id);
+      $.getJSON($SCRIPT_ROOT + '/_plus_one', {
+        message_id: $('input[name="message_' + message_id + '"]').val(),
+        }, function(data) {
+        $("#plus_one_count_"+message_id).text(data.result);
+      });
+    }
+  </script>
+
 {% endblock %}

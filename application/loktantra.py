@@ -3,11 +3,12 @@ from sqlite3 import dbapi2 as sqlite3
 from hashlib import md5
 from datetime import datetime
 from flask import Flask, request, session, url_for, redirect, \
-     render_template, abort, g, flash, _app_ctx_stack
+     render_template, abort, g, flash, _app_ctx_stack, jsonify
 from werkzeug import check_password_hash, generate_password_hash
 
 import utils.message_utils as message_utils
 import utils.search_utils as search_utils
+import utils.user_utils as user_utils
 
 # configuration
 DATABASE = '/tmp/loktantra.db'
@@ -80,6 +81,9 @@ def before_request():
     if 'user_id' in session:
         g.user = query_db('select * from user where user_id = ?',
                           [session['user_id']], one=True)
+        if not g.user:
+          g.user = query_db('select * from department where department_id = ?',
+                            [session['user_id']], one=True)
 
 
 @app.route('/')
@@ -122,12 +126,13 @@ def user_timeline(username):
             follower.who_id = ? and follower.whom_id = ?''',
             [session['user_id'], profile_user['user_id']],
             one=True) is not None
-    return render_template('timeline.html', messages=query_db('''
+    mudda_count = user_utils.get_mudda_count(get_db(), profile_user['user_id'])
+    return render_template('user-timeline.html', messages=query_db('''
             select message.*, user.* from message, user where
             user.user_id = message.author_id and user.user_id = ?
             order by message.pub_date desc limit ?''',
             [profile_user['user_id'], PER_PAGE]), followed=followed,
-            profile_user=profile_user)
+            profile_user=profile_user, mudda_count=mudda_count)
 
 
 @app.route('/<username>/follow')
@@ -185,6 +190,21 @@ def add_message():
         flash('Your message was recorded')
     return redirect(url_for('timeline'))
 
+@app.route('/_plus_one')
+def plus_one():
+    """Returns JSON response of number of upvotes."""
+    message_id = int(request.args.get('message_id'))
+    user_id = session['user_id']
+    db = get_db()
+    message_utils.plus_one_message(db, message_id, user_id)
+    return jsonify(result=len(message_utils.get_plus_ones(db, message_id)))
+
+@app.route('/_add_comment')
+def add_comment(message_id, text):
+    """Returns JSON response of added comment."""
+    user_id = session['user_id']
+    db = get_db()
+    return jsonify(result=message_utils.make_comment(db, message_id, user_id, text))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -201,7 +221,7 @@ def login():
                                      request.form['password']):
             error = 'Invalid password'
         else:
-            flash('You were logged in')
+            flash('You are logged in')
             session['user_id'] = user['user_id']
             return redirect(url_for('timeline'))
     return render_template('login.html', error=error)
