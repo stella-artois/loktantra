@@ -80,6 +80,9 @@ def before_request():
     if 'user_id' in session:
         g.user = query_db('select * from user where user_id = ?',
                           [session['user_id']], one=True)
+        if not g.user:
+          g.user = query_db('select * from department where department_id = ?',
+                            [session['user_id']], one=True)
 
 
 @app.route('/')
@@ -122,7 +125,7 @@ def user_timeline(username):
             follower.who_id = ? and follower.whom_id = ?''',
             [session['user_id'], profile_user['user_id']],
             one=True) is not None
-    return render_template('timeline.html', messages=query_db('''
+    return render_template('user-timeline.html', messages=query_db('''
             select message.*, user.* from message, user where
             user.user_id = message.author_id and user.user_id = ?
             order by message.pub_date desc limit ?''',
@@ -201,7 +204,7 @@ def login():
                                      request.form['password']):
             error = 'Invalid password'
         else:
-            flash('You were logged in')
+            flash('You are logged in')
             session['user_id'] = user['user_id']
             return redirect(url_for('timeline'))
     return render_template('login.html', error=error)
