@@ -23,11 +23,12 @@
         <small>&mdash; {{ message.pub_date|datetimeformat }}</small>
         <input type="hidden" value="{{ message.message_id }}" name ="{{ "message_" ~ message.message_id }}">
         <input type="submit" name="submit" value="Plus One" onclick="plus_one({{ message.message_id }})">
-        <span id={{"plus_one_count_" ~ message.message_id }}> {{ message.plus_one_count }} </span> Plus Ones
-      {% else %}
-        <li><em>There's no message so far.</em>
       {% endif %}
+      <span id={{"plus_one_count_" ~ message.message_id }}> {{ message.plus_one_count }} </span> Plus Ones
   {% endfor %}
+  {% if not messages %}
+    <li><em>There's no message so far.</em>
+  {% endif %}
   </ul>
 
   <script type="text/javascript" >
