@@ -5783,6 +5783,11 @@ fieldset[disabled] .twitter-typeahead .tt-hint {
   background: url(../static/imac.png) 0 0 no-repeat;
   background-size: 940px 778px;
   }
+.tweet-screen {
+  background-color: #1abc9c;
+  border-radius:2em;
+  padding: 40px 40px 40px 40px;
+}
 .login-screen {
   min-height: 473px;
   padding: 123px 199px 33px 306px;

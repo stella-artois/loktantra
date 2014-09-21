@@ -3,17 +3,22 @@
 Public Timeline
 {% endblock %}
 {% block body %}
-<h2>{{ self.title() }}</h2>
+<div class="demo-heading-note"><h3>{{ self.title() }}</h3></div>
 {% if g.user %}
+<div class="tweet-screen">
 <div class=twitbox>
-  <h3>What's on your mind {{ g.user.username }}?</h3>
+
+  <h4>Post a mudda, {{ g.user.username }}!</h4>
   <form action="{{ url_for('add_message') }}" method=post>
     <p>
-      <input type="text" name="text" size="60">
-      <input type="text" name="location" size="60" value="{{ g.user.city }}">
+      <input type="text" name="text" size="80" style="float:left;" placeholder="What's on your mind?" class="input-group">
+
+      <input type="text" name="location" style="float:right;" size="10" value="{{ g.user.city }}">(Change location?)
+      
       <input type="submit" value="Share">
     </p>
   </form>
+</div>
 </div>
 {% endif %}
 <ul class=messages>
