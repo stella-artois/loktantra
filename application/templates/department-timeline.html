@@ -4,6 +4,27 @@ Department Timeline
 {% endblock %}
 {% block body %}
 <div class="demo-heading-note"><h3>{{ self.title() }}</h3></div>
+<h2>{{ department_user.department_name }}</h2>
+  <p>Location: {{ department_user.city }}, {{ department_user.state }}</p>
+  <p>Number of muddas assigned: {{ department_user.num_issues_assigned }}</p>
+  <p>Number of muddas solved: {{ department_user.num_issues_solved }}</p>
+  <p>Reputation: {{ reputation }}</p>
+  <h2>{{ self.title() }}</h2>
+  {% if g.user %}
+      <div class=followstatus>
+      {% if g.user.user_id == department_user.department_id %}
+        This is you!
+      {% elif followed %}
+        You are currently following this user.
+        <a class=unfollow href="{{ url_for('unfollow_user', username=department_user.username)
+          }}">Unfollow user</a>.
+      {% else %}
+        You are not yet following this user.
+        <a class=follow href="{{ url_for('follow_user', username=department_user.username)
+          }}">Follow user</a>.
+      {% endif %}
+      </div>
+  {% endif %}
 {% if g.user %}
 <div class="tweet-screen">
 <div class=twitbox>

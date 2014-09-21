@@ -145,21 +145,17 @@ def user_timeline(username):
             return redirect(url_for('public_timeline'))
         else:
             return render_template('department-timeline.html',
-                messages = department_utils.get_timeline(get_db(), department_user['department_id']))
+                messages = department_utils.get_timeline(get_db(), department_user['department_id']),
+                department_user = department_user)
 
     else:
-        followed = False
         if g.user:
-            followed = query_db('''select 1 from follower where
-                follower.who_id = ? and follower.whom_id = ?''',
-                [session['user_id'], profile_user['user_id']],
-                one=True) is not None
-        mudda_count = user_utils.get_mudda_count(get_db(), profile_user['user_id'])
-        return render_template('user-timeline.html', messages=query_db('''
+            mudda_count = user_utils.get_mudda_count(get_db(), profile_user['user_id'])
+            return render_template('user-timeline.html', messages=query_db('''
                 select message.*, user.* from message, user where
                 user.user_id = message.author_id and user.user_id = ?
                 order by message.pub_date desc limit ?''',
-                [profile_user['user_id'], PER_PAGE]), followed=followed,
+                [profile_user['user_id'], PER_PAGE]),
                 profile_user=profile_user, mudda_count=mudda_count)
 
 
