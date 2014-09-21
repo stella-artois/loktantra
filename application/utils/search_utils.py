@@ -14,3 +14,17 @@ def get_messages_by_hashtag(db, hashtag):
   messages = db.execute('''select message_id from hashtag where
       hashtag = %s''' % (hashtag))
   return messages.fetchall()
+
+
+def get_messages_by_keyword(db, keyword):
+  """Returns list of messages containing given keyword.
+  Args:
+    db: Returns get_db object.
+    keyword: keyword which needs to be searched.
+  Returns:
+    messages: List of messages ids.
+  """
+  messages = db.execute('''select message.*, user.* from message, user where
+      user.user_id = message.author_id and
+      message.tokens like '%s' ''' % ('%' + keyword + '%'))
+  return messages.fetchall()

@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block title %}
-Public Timeline
+Department Timeline
 {% endblock %}
 {% block body %}
 <div class="demo-heading-note"><h3>{{ self.title() }}</h3></div>
@@ -8,31 +8,21 @@ Public Timeline
 <div class="tweet-screen">
 <div class=twitbox>
 
-   <h4 style="text-align:center;padding:20px 20px 30px 20px;">Post a mudda, {{ g.user.username }}!</h4>
+  <h4>Post a mudda, {{ g.user.username }}!</h4>
   <form action="{{ url_for('add_message') }}" method=post>
     <p>
-        <div class=row>
-      <div class="col-md-1"></div>
-      <div class="col-md-5"> <input type="text" name="text" size="70" placeholder="What's on your mind?" class="input-group"></div>
-      <div class="col-md-1"></div>
-      <div class="col-md-3">&nbsp; &nbsp;<span style="font-size:10pt">Location</span>
-      <input size=15 type="text"  name="location"  value="{{ g.user.city }}">
-     </div> 
-                        &nbsp; &nbsp; &nbsp;
-                            <input type=submit value="Submit" style="background:url(../static/post.png);border:2px solid;padding:0px 3px 0px 20px;background-repeat:no-repeat;color:#34495e;border-radius:10px;background-color:#1abc9c;">
+      <input type="text" name="text" size="80" style="float:left;" placeholder="What's on your mind?" class="input-group">
 
-      </div>
-     </div> 
-      </p>
+      <input type="text" name="location" style="float:right;" size="10" value="{{ g.user.city }}">(Change location?)
+      
+      <input type="submit" value="Share">
+    </p>
   </form>
-
+</div>
+</div>
 {% endif %}
 <ul class=messages>
   {% for message in messages %}
-  <br><div style="background:#3e5171;border-radius:20px;padding:25px 20px 20px 60px;color:#eeeeee"> <li><img src="{{ message.email|gravatar(size=48) }}" style="float:left"><p>
-  <strong>&nbsp;<a href="{{ url_for('user_timeline', username=message.username)
-      }}" style="font-size:18pt">{{ message.username }}</a></strong>
-  &nbsp;&nbsp;{{ message.text }}
   <li><img src="{{ message.email|gravatar(size=48) }}"><p>
   <strong><a href="{{ url_for('user_timeline', username=message.username)
       }}">{{ message.username }}</a></strong>
@@ -47,39 +37,27 @@ Public Timeline
       {% endfor %}
       <small>&mdash; {{ message.pub_date|datetimeformat }}</small>
   {% if g.user %}
-  <small>&mdash; On {{ message.pub_date|datetimeformat }}, {{ message.location }}</small>
+  <small>&mdash; {{ message.pub_date|datetimeformat }}, {{ message.location }}</small>
   <input type="hidden" value="{{ message.message_id }}" name ="{{ "message_" ~ message.message_id }}">
-  <div class="row">
-  <div class="col-md-3">
-   <div class="actions btn btn-primary btn-lg btn-block" style="background-color:#16a085"><input type=submit style="background:none;border:none;padding:0px 20px 0px 20px" name="submit" value="Plus One" onclick="plus_one({{ message.message_id }})"> <span id={{"plus_one_count_" ~ message.message_id }}> {{ "(" ~ message.plus_one_count ~ ")" }} </span></div></div>
-    <div class="col-md-4">
-   
-               <select class="form-control select select-primary" style="background-color:#16a085;height:43px;color:white;text-align:center;" data-toggle="select">
-            <option value="0">Open</option>
-            <option value="1">Assigned</option>
-            <option value="2">Closed</option>
-          </select>
-
-    </div>
+  <input type="submit" name="submit" value="Plus One" onclick="plus_one({{ message.message_id }})">
   {% endif %}
   <span id={{"plus_one_count_" ~ message.message_id }}> {{ message.plus_one_count }} </span> Plus Ones</li>
-  <div>Status: {{ message.status }}, Assigned to {{ message.assignee }}</div>
 
   {% if g.user %}
-  <div class="col-md-5">
-    <textarea name="{{ "body_" ~ message.message_id }}" style="font-size:10pt" cols=30 rows=2 placeholder="Add your comment..."></textarea>
-    <input type="submit" value="Post" style="background:url(../static/comment.png);border:none;padding:0px 3px 0px 20px;background-repeat:no-repeat;color:#34495e;border:2px solid;border-radius:10px;background-color:#1abc9c" name="submit" value="Add comment" onclick="add_comment({{ message.message_id }})">
+  <div>
+    <textarea name="{{ "body_" ~ message.message_id }}" placeholder="Add your comment..."></textarea>
+    <input type="submit" name="submit" value="Add comment" onclick="add_comment({{ message.message_id }})">
   </div>
   <div class="comments">
     <ul id="{{ "comments_" ~ message.message_id }}"></ul>
-  </div></div>
-</div>  {% endif %}
+  </div>
+  {% endif %}
   {% endfor %}
   {% if not messages %}
   <em>There's no message so far.</em>
   {% endif %}
 </ul>
-</div><br><br>
+
 <script type="text/javascript">
   function plus_one(message_id) {
     $.getJSON($SCRIPT_ROOT + '/_plus_one', {
@@ -138,4 +116,3 @@ Public Timeline
 </script>
 
 {% endblock %}
-
