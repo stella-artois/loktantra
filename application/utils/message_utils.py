@@ -154,8 +154,7 @@ def get_comments(db, message_id, user_id):
     List of comments posted in this message id.
   """
   message_rows = db.execute('''select * from comment
-      where message_id=%s and
-      user_id=%s''' % (message_id, user_id))
+      where message_id=%s''' % (message_id))
   messages = []
   row = message_rows.fetchone()
   while row:
