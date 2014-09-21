@@ -8,29 +8,28 @@ Public Timeline
 <div class="tweet-screen">
 <div class=twitbox>
 
-   <h4 style="text-align:center">Post a mudda, {{ g.user.username }}!</h4>
+   <h4 style="text-align:center;padding:20px 20px 30px 20px;">Post a mudda, {{ g.user.username }}!</h4>
   <form action="{{ url_for('add_message') }}" method=post>
     <p>
         <div class=row>
-      <div class="col-md-6"> <input type="text" name="text" size="70" placeholder="What's on your mind?" class="input-group"></div>
-      <div class="col-md-2"></div>
-      <div class="col-md-4"><span style="font-size:10pt">Location</span>
+      <div class="col-md-1"></div>
+      <div class="col-md-5"> <input type="text" name="text" size="70" placeholder="What's on your mind?" class="input-group"></div>
+      <div class="col-md-1"></div>
+      <div class="col-md-3">&nbsp; &nbsp;<span style="font-size:10pt">Location</span>
       <input size=15 type="text"  name="location"  value="{{ g.user.city }}">
      </div> 
+                        &nbsp; &nbsp; &nbsp;
+                            <input type=submit value="Submit" style="background:url(../static/post.png);border:2px solid;padding:0px 3px 0px 20px;background-repeat:no-repeat;color:#34495e;border-radius:10px;background-color:#1abc9c;">
+
       </div>
-      <br>
-      <div class = "row">
-              <div class= "col-md-4"></div>
-                      <div class= "col-md-4"><div class="actions btn btn-primary btn-lg btn-block" style="background-color:#16a085;"><input type=submit value="Share" style="background:none;border:none;"></div>
-      </div></div>
-      
+     </div> 
       </p>
   </form>
 
 {% endif %}
 <ul class=messages>
   {% for message in messages %}
-  <li><img src="{{ message.email|gravatar(size=48) }}" style="float:left"><p>
+  <br><div style="background:#3e5171;border-radius:20px;padding:25px 20px 20px 60px;color:#eeeeee"> <li><img src="{{ message.email|gravatar(size=48) }}" style="float:left"><p>
   <strong>&nbsp;<a href="{{ url_for('user_timeline', username=message.username)
       }}" style="font-size:18pt">{{ message.username }}</a></strong>
   &nbsp;&nbsp;{{ message.text }}
@@ -52,20 +51,20 @@ Public Timeline
   {% endif %}
 
   {% if g.user %}
-  <div class="col-md-4">
-    <textarea name="{{ "body_" ~ message.message_id }}" style="font-size:10pt" cols=30 placeholder="Add your comment..."></textarea>
-    <input type="submit" name="submit" value="Add comment" onclick="add_comment({{ message.message_id }})">
+  <div class="col-md-5">
+    <textarea name="{{ "body_" ~ message.message_id }}" style="font-size:10pt" cols=30 rows=2 placeholder="Add your comment..."></textarea>
+    <input type="submit" value="Post" style="background:url(../static/comment.png);border:none;padding:0px 3px 0px 20px;background-repeat:no-repeat;color:#34495e;border:2px solid;border-radius:10px;background-color:#1abc9c" name="submit" value="Add comment" onclick="add_comment({{ message.message_id }})">
   </div>
   <div class="comments">
     <ul id="{{ "comments_" ~ message.message_id }}"></ul>
   </div></div>
-  {% endif %}
+</div>  {% endif %}
   {% endfor %}
   {% if not messages %}
   <em>There's no message so far.</em>
   {% endif %}
 </ul>
-</div>
+</div><br><br>
 <script type="text/javascript">
   function plus_one(message_id) {
     $.getJSON($SCRIPT_ROOT + '/_plus_one', {
