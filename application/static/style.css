@@ -177,3 +177,11 @@ div.error {
     font-size: 13px;
     text-align:center;
 }
+.float-right {
+    margin-left: 50px;
+    font-style: italic;
+}
+
+.float-right-em {
+    color: #87a892;
+}

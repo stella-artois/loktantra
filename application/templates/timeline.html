@@ -139,10 +139,21 @@ Public Timeline
       $.getJSON($SCRIPT_ROOT + '/_set_comments', {
         message_id: message_id,
         }, function(data) {
-          for (var comment in data.result) {
+          for (var i=0; i< data.result.length; i++) {
+            var comment = data.result[i]
             var li = document.createElement('li');
-            var node = document.createTextNode(data.result[comment]);
+            var node = document.createTextNode(comment.text);
             li.appendChild(node);
+            var author_info = document.createElement('div');
+            var author_info2 = document.createElement('span');
+            var author_name = document.createTextNode(comment.author);
+            var author = document.createTextNode("submitted by: ");
+            author_info2.appendChild(author_name);
+            author_info.appendChild(author);
+            author_info.appendChild(author_info2);
+            author_info.className += 'float-right';
+            author_info2.className += 'float-right-em';
+            li.appendChild(author_info)
             ul.appendChild(li);
           }
         }

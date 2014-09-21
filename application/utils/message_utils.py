@@ -158,7 +158,9 @@ def get_comments(db, message_id, user_id):
   messages = []
   row = message_rows.fetchone()
   while row:
-    messages.append(row['text'])
+    username = db.execute('''select full_name from user where user_id = "%s"
+            '''% row['user_id'] ).fetchone()[0]
+    messages.append({'text':row['text'], 'author': username})
     row = message_rows.fetchone()
   return messages
 
