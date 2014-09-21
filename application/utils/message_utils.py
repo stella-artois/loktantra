@@ -1,8 +1,7 @@
 # I define helper functions for messages.
 
-<<<<<<< HEAD
 VALIDATION_THRESHOLD = 1
-=======
+
 TAGS = {
 	'NORMAL_TEXT': 1,
 	'HASH_TAG': 2,
@@ -30,7 +29,6 @@ def getTags(text):
 
 def get_message_as_token(text):
   return ',' + ','.join([token[0] for token in getTags(text)])
->>>>>>> origin/hashtags-link
 
 def extract_hashtags(text):
   """Responsible for extracting hashtags from tweet text.
