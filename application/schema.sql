@@ -37,6 +37,8 @@ create table message (
   text text not null,
   plus_one_count integer default 0 not null,
   location text not null,
+  status text default 'new' not null,
+  assignee text,
   pub_date integer
 );
 
