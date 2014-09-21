@@ -7,13 +7,14 @@
   {% endif %}
 {% endblock %}
 {% block body %}
-  <h2>{{ profile_user.full_name }}</h2>
-  <p>Location: {{ profile_user.city }}, {{ profile_user.state }}</p>
-  <p>Number of muddas posted: {{ mudda_count }}</p>
-  <p>Reputation: {{ reputation }}</p>
-  <h2>{{ self.title() }}</h2>
-  {% if g.user %}
-      <div class=followstatus>
+<div class="demo-heading-note"><h3>{{ profile_user.full_name }}</h3></div>
+<div class=row>
+ <div class="col-md-5">
+  Location: {{ profile_user.city }}, {{ profile_user.state }}
+ </div>
+ <div class="col-md-7">
+ {% if g.user %}
+      <div class=followstatus style="float:right">
       {% if g.user.user_id == profile_user.user_id %}
         This is you!
       {% elif followed %}
@@ -26,13 +27,26 @@
           }}">Follow user</a>.
       {% endif %}
       </div>
-  {% endif %}
-  <ul class=messages>
+  {% endif %} 
+  </div>
+</div>
+
+ 
+  <div class="tweet-screen">
+<div class=twitbox>
+ <div class=row>
+    <div class="demo-heading-note col-md-7"> <h5> Number of muddas posted: {{ mudda_count }}</h5></div>
+    <div class="demo-heading-note col-md-5"> <h5> Reputation: {{ reputation }}</h5></div>
+ </div> 
+
+<ul class=messages>
   {% for message in messages %}
-    <li><img src="{{ message.email|gravatar(size=48) }}"><p>
-      <strong><a href="{{ url_for('user_timeline', username=message.username)
-      }}">{{ message.username }}</a></strong>
-      {% for tag in getTags(message.text) %}
+  <br><div style="background:#3e5171;border-radius:20px;padding:25px 20px 20px 60px;color:#eeeeee">
+    <li><img src="{{ message.email|gravatar(size=48) }}" style="float:left"><p>
+      <strong> &nbsp;<a href="{{ url_for('user_timeline', username=message.username)
+      }}" style="font-size:18pt">{{ message.username }}</a></strong>
+    &nbsp; &nbsp;  
+     {% for tag in getTags(message.text) %}
         {% if tag[1] == 1 %}
           {{tag[0]}}
         {% elif tag[1] == 2 %}
@@ -41,9 +55,11 @@
           <a href="/{{tag[0]}}">@{{tag[0]}}</a>
         {% endif %}
       {% endfor %}
-      <small>&mdash; {{ message.pub_date|datetimeformat }}</small>
-  {% else %}
-    <li><em>There's no message so far.</em>
-  {% endfor %}
-  </ul>
-{% endblock %}
+      <small>&mdash; On {{ message.pub_date|datetimeformat }}, {{ message.location }} </small>
+  </li></div>{% endfor %}
+  </ul></div></div>
+<br><br>{% endblock %}
+
+
+
+

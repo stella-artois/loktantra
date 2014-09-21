@@ -30,7 +30,8 @@
         <div class="collapse navbar-collapse" id="navbar-collapse-01">
           <ul class="nav navbar-nav navbar-left">
             {% if g.user %}
-            <li><a href="{{ url_for('timeline') }}">My timeline</a></li>
+           <li><a href="/{{ g.user.username }}">Profile</a></li>
+            <li><a href="{{ url_for('timeline') }}">Timeline</a></li>
             <li><a href="{{ url_for('public_timeline') }}">Public timeline</a></li>
             <li><a href="{{ url_for('logout') }}"> Logout [{{ g.user.username }}]</a></li>
             {% else %}
