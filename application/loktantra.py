@@ -338,6 +338,7 @@ def register():
                 request.form['city'],
                 generate_password_hash(request.form['password'])])
             db.commit()
+            user_utils.force_follow_department(db)
             flash('You were successfully registered and can login now')
             return redirect(url_for('login'))
     return render_template('register.html', error=error)
@@ -372,6 +373,7 @@ def register_department():
                 request.form['city'],
                 generate_password_hash(request.form['password'])])
             db.commit()
+            user_utils.force_follow_department(db)
 
             department = query_db('''select * from department where
             username = ?''', [request.form['username']], one=True)

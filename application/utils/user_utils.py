@@ -23,3 +23,12 @@ def get_user_reputation(db, user_id):
   muddas = db.execute('''select count(*) from message where
       author_id = %s''' % (user_id))
   return muddas.fetchone()[0]
+
+def force_follow_department(db):
+  """Forces a user to follow some departments
+  on some pre conceived notions. [citation required.]
+  """
+
+  db.execute('''insert or ignore into follower(who_id, whom_id) select user_id, department_id from
+      user, department where user.city = department.city''')
+  db.commit()

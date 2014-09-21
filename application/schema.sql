@@ -24,7 +24,8 @@ create table if not exists department (
 
 create table if not exists follower (
   who_id integer,
-  whom_id integer
+  whom_id integer,
+  primary key(who_id, whom_id)
 );
 
 create table if not exists message (
