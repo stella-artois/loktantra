@@ -1,11 +1,9 @@
 create table if not exists user (
   user_id integer primary key autoincrement,
   full_name text not null,
-  rep integer default 0 not null,
   username text not null,
   email text not null,
   birth_date date not null,
-  aadhar_number integer not null,
   city text not null,
   state text not null,
   pw_hash text not null
@@ -33,10 +31,28 @@ create table if not exists message (
   message_id integer primary key autoincrement,
   author_id integer not null,
   text text not null,
+  plus_one_count integer default 0 not null,
+  location text not null,
   pub_date integer
 );
 
 create table if not exists hashtag (
   message_id integer not null,
   text text not null
+);
+
+create table if not exists tracked_hashtag (
+  department_id integer not null,
+  hashtag text not null
+);
+
+create table if not exists plus_one (
+  message_id integer not null,
+  user_id integer not null
+);
+
+create table if not exists comment (
+  text text not null,
+  user_id integer not null,
+  message_id integer not null
 );

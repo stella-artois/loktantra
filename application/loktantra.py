@@ -3,11 +3,12 @@ from sqlite3 import dbapi2 as sqlite3
 from hashlib import md5
 from datetime import datetime
 from flask import Flask, request, session, url_for, redirect, \
-     render_template, abort, g, flash, _app_ctx_stack
+     render_template, abort, g, flash, _app_ctx_stack, jsonify
 from werkzeug import check_password_hash, generate_password_hash
 
 import utils.message_utils as message_utils
 import utils.search_utils as search_utils
+import utils.user_utils as user_utils
 
 # configuration
 DATABASE = '/tmp/loktantra.db'
@@ -81,6 +82,9 @@ def before_request():
     if 'user_id' in session:
         g.user = query_db('select * from user where user_id = ?',
                           [session['user_id']], one=True)
+        if not g.user:
+          g.user = query_db('select * from department where department_id = ?',
+                            [session['user_id']], one=True)
 
 
 @app.route('/')
@@ -124,12 +128,13 @@ def user_timeline(username):
             follower.who_id = ? and follower.whom_id = ?''',
             [session['user_id'], profile_user['user_id']],
             one=True) is not None
-    return render_template('timeline.html', messages=query_db('''
+    mudda_count = user_utils.get_mudda_count(get_db(), profile_user['user_id'])
+    return render_template('user-timeline.html', messages=query_db('''
             select message.*, user.* from message, user where
             user.user_id = message.author_id and user.user_id = ?
             order by message.pub_date desc limit ?''',
             [profile_user['user_id'], PER_PAGE]), followed=followed,
-            profile_user=profile_user)
+            profile_user=profile_user, mudda_count=mudda_count)
 
 
 @app.route('/<username>/follow')
@@ -171,9 +176,12 @@ def add_message():
         abort(401)
     if request.form['text']:
         db = get_db()
-        db.execute('''insert into message (author_id, text, pub_date)
-          values (?, ?, ?)''', (session['user_id'], request.form['text'],
-                                int(time.time())))
+        db.execute('''insert into message (author_id, text, location, pub_date)
+            values (?, ?, ?, ?)''',
+            (session['user_id'],
+            request.form['text'],
+            request.form['location'],
+            int(time.time())))
         db.commit()
         messages = db.execute('''select message_id from message where
             author_id = %s order by pub_date''' % (session['user_id']))
@@ -187,6 +195,47 @@ def add_message():
         flash('Your message was recorded')
     return redirect(url_for('timeline'))
 
+@app.route('/_plus_one')
+def plus_one():
+    """Returns JSON response of number of upvotes."""
+    message_id = int(request.args.get('message_id'))
+    user_id = session['user_id']
+    db = get_db()
+    if message_utils.is_upvoted(db, message_id, user_id):
+      message_utils.minus_one_message(db, message_id, user_id)
+      status = "active"
+    else:
+      message_utils.plus_one_message(db, message_id, user_id)
+      status = "inactive"
+    return jsonify(result=len(message_utils.get_plus_ones(db, message_id)), status=status)
+
+@app.route('/_add_comment')
+def add_comment():
+    """Returns JSON response of added comment."""
+    message_id = int(request.args.get('message_id'))
+    text = request.args.get('text')
+    user_id = session['user_id']
+    db = get_db()
+    return jsonify(result=message_utils.make_comment(db, message_id, user_id, text))
+
+@app.route('/_set_comments')
+def set_comments():
+    message_id = int(request.args.get('message_id'))
+    user_id = session['user_id']
+    db = get_db()
+    return jsonify(result=message_utils.get_comments(db, message_id, user_id))
+
+@app.route('/_set_upvote_classes')
+def set_upvote_classes():
+  user_id = int(session['user_id'])
+  message_id = int(request.args.get('message_id'))
+  db = get_db()
+  rows = db.execute('''select * from plus_one
+      where user_id=%d and message_id=%d''' % (user_id, message_id))
+  if rows.fetchone():
+    return jsonify(result=1)
+  else:
+    return jsonify(result=0)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -203,7 +252,7 @@ def login():
                                      request.form['password']):
             error = 'Invalid password'
         else:
-            flash('You were logged in')
+            flash('You are logged in')
             session['user_id'] = user['user_id']
             return redirect(url_for('timeline'))
     return render_template('login.html', error=error)
@@ -251,12 +300,11 @@ def register():
         else:
             db = get_db()
             db.execute('''insert into user (
-                username, full_name, email, aadhar_number, birth_date, state, city, pw_hash)
-                values (?, ?, ?, ?, ?, ?, ?, ?)''',
+                username, full_name, email, birth_date, state, city, pw_hash)
+                values (?, ?, ?, ?, ?, ?, ?)''',
                 [request.form['username'],
                 request.form['full_name'],
                 request.form['email'],
-                request.form['aadhar_number'],
                 request.form['birth_date'],
                 request.form['state'],
                 request.form['city'],
