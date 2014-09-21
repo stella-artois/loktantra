@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+{% block title %}
+Department Timeline
+{% endblock %}
+{% block body %}
+<div class="demo-heading-note"><h3>{{ self.title() }}</h3></div>
+{% if g.user %}
+<div class="tweet-screen">
+<div class=twitbox>
+
+  <h4>Post a mudda, {{ g.user.username }}!</h4>
+  <form action="{{ url_for('add_message') }}" method=post>
+    <p>
+      <input type="text" name="text" size="80" style="float:left;" placeholder="What's on your mind?" class="input-group">
+
+      <input type="text" name="location" style="float:right;" size="10" value="{{ g.user.city }}">(Change location?)
+      
+      <input type="submit" value="Share">
+    </p>
+  </form>
+</div>
+</div>
+{% endif %}
+<ul class=messages>
+  {% for message in messages %}
+  <li><img src="{{ message.email|gravatar(size=48) }}"><p>
+  <strong><a href="{{ url_for('user_timeline', username=message.username)
+      }}">{{ message.username }}</a></strong>
+      {% for tag in getTags(message.text) %}
+        {% if tag[1] == 1 %}
+          {{tag[0]}}
+        {% elif tag[1] == 2 %}
+          <a href="{{ url_for('search_hashtag', hashtag=tag[0])}}">#{{tag[0]}}</a>
+        {% else %}
+          <a href="/{{tag[0]}}">@{{tag[0]}}</a>
+        {% endif %}
+      {% endfor %}
+      <small>&mdash; {{ message.pub_date|datetimeformat }}</small>
+  {% if g.user %}
+  <small>&mdash; {{ message.pub_date|datetimeformat }}, {{ message.location }}</small>
+  <input type="hidden" value="{{ message.message_id }}" name ="{{ "message_" ~ message.message_id }}">
+  <input type="submit" name="submit" value="Plus One" onclick="plus_one({{ message.message_id }})">
+  {% endif %}
+  <span id={{"plus_one_count_" ~ message.message_id }}> {{ message.plus_one_count }} </span> Plus Ones</li>
+
+  {% if g.user %}
+  <div>
+    <textarea name="{{ "body_" ~ message.message_id }}" placeholder="Add your comment..."></textarea>
+    <input type="submit" name="submit" value="Add comment" onclick="add_comment({{ message.message_id }})">
+  </div>
+  <div class="comments">
+    <ul id="{{ "comments_" ~ message.message_id }}"></ul>
+  </div>
+  {% endif %}
+  {% endfor %}
+  {% if not messages %}
+  <em>There's no message so far.</em>
+  {% endif %}
+</ul>
+
+<script type="text/javascript">
+  function plus_one(message_id) {
+    $.getJSON($SCRIPT_ROOT + '/_plus_one', {
+      message_id: $('input[name="message_' + message_id + '"]').val(),
+      }, function(data) {
+       $("#plus_one_count_"+message_id).text(data.result);
+       var li = $('input[name="message_' + message_id + '"]').parent().parent();
+       $(li).removeClass('active');
+       $(li).removeClass('inactive');
+       $(li).addClass(data.status);
+    });
+  }
+  function add_comment(message_id) {
+    $.getJSON($SCRIPT_ROOT + '/_add_comment', {
+      message_id: $('input[name="message_' + message_id + '"]').val(),
+      text: $('textarea[name="body_' + message_id + '"]').val(),
+      }, function(data) {
+        if (data) {
+          $('#comments_' + message_id).append('<li>' + $('textarea[name="body_' + message_id + '"]').val() +'</li>');
+          $('textarea[name="body_' + message_id + '"]').val('');
+        }
+    });
+  }
+  $(document).ready(function(){
+
+    $(".messages li").each(function() {
+        var li = this;
+        var message_id = $(this).find('input')[0]['name'].split('_')[1];
+        $.getJSON($SCRIPT_ROOT + '/_set_upvote_classes', {
+            message_id: message_id,
+            }, function(data) {
+              if (data.result) {
+                $(li).addClass('inactive');
+              }
+            }
+        );
+    });
+
+    $(".comments ul").each(function() {
+      var ul = this;
+      var message_id = $(this).attr('id').split('_')[1];
+      $.getJSON($SCRIPT_ROOT + '/_set_comments', {
+        message_id: message_id,
+        }, function(data) {
+          for (var comment in data.result) {
+            var li = document.createElement('li');
+            var node = document.createTextNode(data.result[comment]);
+            li.appendChild(node);
+            ul.appendChild(li);
+          }
+        }
+      );
+    });
+
+  });
+</script>
+
+{% endblock %}

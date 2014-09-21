@@ -9,12 +9,18 @@ from werkzeug import check_password_hash, generate_password_hash
 import utils.message_utils as message_utils
 import utils.search_utils as search_utils
 import utils.user_utils as user_utils
+import utils.department_utils as department_utils
 
 # configuration
 DATABASE = '/tmp/loktantra.db'
 PER_PAGE = 30
 DEBUG = True
 SECRET_KEY = 'development key'
+USERS = {
+    'department' : 1,
+    'user' : 2
+}
+
 
 # create our little application :)
 app = Flask(__name__)
@@ -76,16 +82,21 @@ def gravatar_url(email, size=80):
         (md5(email.strip().lower().encode('utf-8')).hexdigest(), size)
 
 
+def get_user_type():
+    if 'user_id' in session:
+        return USERS['user']
+    if 'department_id' in session:
+        return USERS['department']
+
 @app.before_request
 def before_request():
     g.user = None
     if 'user_id' in session:
         g.user = query_db('select * from user where user_id = ?',
-                          [session['user_id']], one=True)
-        if not g.user:
-          g.user = query_db('select * from department where department_id = ?',
-                            [session['user_id']], one=True)
-
+            [session['user_id']], one=True)
+    if 'department_id' in session:
+        g.user = query_db('select * from department where department_id = ?',
+            [session['department_id']], one=True)
 
 @app.route('/')
 def timeline():
@@ -95,15 +106,21 @@ def timeline():
     """
     if not g.user:
         return redirect(url_for('public_timeline'))
-    messages = query_db('''
-        select message.*, user.* from message, user
-        where message.author_id = user.user_id and (
-            user.user_id = ? or
-            user.user_id in (select whom_id from follower
-                                    where who_id = ?))
-        order by message.pub_date desc limit ?''',
-        [session['user_id'], session['user_id'], PER_PAGE])
-    return render_template('timeline.html', messages = messages)
+    user_type = get_user_type()
+    if user_type == USERS['user']:
+        messages = query_db('''
+            select message.*, user.* from message, user
+            where message.author_id = user.user_id and (
+                user.user_id = ? or
+                user.user_id in (select whom_id from follower
+                                        where who_id = ?))
+            order by message.pub_date desc limit ?''',
+            [session['user_id'], session['user_id'], PER_PAGE])
+        return render_template('timeline.html', messages = messages)
+
+    elif user_type == USERS['department']:
+        messages = department_utils.get_timeline(get_db(), session['department_id'])
+        return render_template('timeline.html', messages = messages)
 
 
 @app.route('/public')
@@ -121,20 +138,28 @@ def user_timeline(username):
     profile_user = query_db('select * from user where username = ?',
                             [username], one=True)
     if profile_user is None:
-        abort(404)
-    followed = False
-    if g.user:
-        followed = query_db('''select 1 from follower where
-            follower.who_id = ? and follower.whom_id = ?''',
-            [session['user_id'], profile_user['user_id']],
-            one=True) is not None
-    mudda_count = user_utils.get_mudda_count(get_db(), profile_user['user_id'])
-    return render_template('user-timeline.html', messages=query_db('''
-            select message.*, user.* from message, user where
-            user.user_id = message.author_id and user.user_id = ?
-            order by message.pub_date desc limit ?''',
-            [profile_user['user_id'], PER_PAGE]), followed=followed,
-            profile_user=profile_user, mudda_count=mudda_count)
+        department_user = query_db('select * from department where username = ?',
+                            [username], one=True)
+        if department_user is None:
+            redirect(url_for('public_timeline'))
+        else:
+            return render_template('department-timeline.html',
+                messages = department_utils.get_timeline(get_db(), department_user['department_id']))
+
+    else:
+        followed = False
+        if g.user:
+            followed = query_db('''select 1 from follower where
+                follower.who_id = ? and follower.whom_id = ?''',
+                [session['user_id'], profile_user['user_id']],
+                one=True) is not None
+        mudda_count = user_utils.get_mudda_count(get_db(), profile_user['user_id'])
+        return render_template('user-timeline.html', messages=query_db('''
+                select message.*, user.* from message, user where
+                user.user_id = message.author_id and user.user_id = ?
+                order by message.pub_date desc limit ?''',
+                [profile_user['user_id'], PER_PAGE]), followed=followed,
+                profile_user=profile_user, mudda_count=mudda_count)
 
 
 @app.route('/<username>/follow')
@@ -183,8 +208,9 @@ def add_message():
             request.form['location'],
             int(time.time())))
         db.commit()
+
         messages = db.execute('''select message_id from message where
-            author_id = %s order by pub_date''' % (session['user_id']))
+            author_id = %s order by pub_date DESC LIMIT 1''' % (session['user_id']))
         message_id = messages.fetchone()[0]
         # Store hashtahgs in DB.
         hashtags = message_utils.extract_hashtags(request.form['text'])
@@ -274,7 +300,7 @@ def login_department():
             error = 'Invalid password'
         else:
             flash('You are logged in')
-            session['user_id'] = department['department_id']
+            session['department_id'] = department['department_id']
             return redirect(url_for('timeline'))
     return render_template('login-department.html', error=error)
 
@@ -344,6 +370,15 @@ def register_department():
                 request.form['city'],
                 generate_password_hash(request.form['password'])])
             db.commit()
+
+            department = query_db('''select * from department where
+            username = ?''', [request.form['username']], one=True)
+
+            department_utils.follow_tags(
+                get_db(),
+                department['department_id'], 
+                request.form['follow_tags'])
+
             flash('''You were successfully registered. Verification is pending.
                 If your email address ends in .gov or .gov.in your account will
                 be automatically verified.''')
@@ -369,7 +404,11 @@ def search_hashtag():
 def logout():
     """Logs the user out."""
     flash('You were logged out')
-    session.pop('user_id', None)
+    user_type = get_user_type()
+    if user_type == USERS['user']:
+        session.pop('user_id', None)
+    elif user_type == USERS['department']:
+        session.pop('department_id', None)
     return redirect(url_for('public_timeline'))
 
 

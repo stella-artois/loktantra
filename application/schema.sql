@@ -16,7 +16,7 @@ create table if not exists department (
   num_issues_solved integer default 0 not null,
   verified integer default 0 not null,
   username text not null,
-  email text not null,
+  email text not null default "piyush.devel@gmail.com",
   city text not null,
   state text not null,
   pw_hash text not null
