@@ -4,22 +4,21 @@ Public Timeline
 {% endblock %}
 {% block body %}
 <div class="demo-heading-note"><h3>{{ self.title() }}</h3></div>
-{% if g.user %}
+{% if 'user_id' in session %}
 <div class="tweet-screen">
 <div style="background:#3e5171;border-radius:20px;padding:25px 30px 40px 40px;color:#eeeeee;margin-bottom:100px">
    <h4>Post a mudda, {{ g.user.username }}!</h4>
   <form action="{{ url_for('add_message') }}" method=post>
-   <br> 
+   <br>
         <div class=row>
       <div class="col-md-1"></div>
       <div class="col-md-5"> <input type="text" name="text" size="50" placeholder="What's on your mind?" class="input-group"></div>
       <div class="col-md-1"></div>
       <div class="col-md-3">&nbsp; &nbsp;<span style="font-size:10pt">Location</span>
       <input size=15 type="text"  name="location"  value="{{ g.user.city }}">
-     </div> 
+     </div>
                         &nbsp; &nbsp; &nbsp;
                             <input type=submit value="Submit" style="background:url(../static/post.png);border:2px solid;padding:0px 3px 0px 20px;background-repeat:no-repeat;color:#34495e;border-radius:10px;background-color:#1abc9c;">
-
      </div> </div>
       </p>
   </form>
@@ -27,7 +26,7 @@ Public Timeline
 {% endif %}
 <ul class=messages style="padding-left:0px">
   {% for message in messages %}
-  <br><div style="background:#3e5171;border-radius:20px;padding:25px 20px 20px 20px;color:#eeeeee"> 
+  <br><div style="background:#3e5171;border-radius:20px;padding:25px 20px 20px 20px;color:#eeeeee">
   <li><img src="{{ message.email|gravatar(size=48) }}" style="float:left"><p>
   <strong>&nbsp;<a href="{{ url_for('user_timeline', username=message.username)
       }}" style="font-size:18pt">{{ message.username }}</a></strong>
