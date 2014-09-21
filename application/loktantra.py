@@ -141,7 +141,8 @@ def user_timeline(username):
         department_user = query_db('select * from department where username = ?',
                             [username], one=True)
         if department_user is None:
-            redirect(url_for('public_timeline'))
+            flash('User doesn\'t exist.')
+            return redirect(url_for('public_timeline'))
         else:
             return render_template('department-timeline.html',
                 messages = department_utils.get_timeline(get_db(), department_user['department_id']))
@@ -201,12 +202,13 @@ def add_message():
         abort(401)
     if request.form['text']:
         db = get_db()
-        db.execute('''insert into message (author_id, text, location, pub_date)
-            values (?, ?, ?, ?)''',
+        db.execute('''insert into message (author_id, text, location, pub_date, tokens)
+            values (?, ?, ?, ?, ?)''',
             (session['user_id'],
             request.form['text'],
             request.form['location'],
-            int(time.time())))
+            int(time.time()),
+            message_utils.get_message_as_token(request.form['text'])))
         db.commit()
 
         messages = db.execute('''select message_id from message where

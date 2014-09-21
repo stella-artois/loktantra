@@ -33,6 +33,7 @@ create table if not exists message (
   text text not null,
   plus_one_count integer default 0 not null,
   location text not null,
+  tokens text not  null,
   pub_date integer
 );
 
