@@ -29,13 +29,11 @@ Public Timeline
 {% endif %}
 <ul class=messages>
   {% for message in messages %}
-  <br><div style="background:#3e5171;border-radius:20px;padding:25px 20px 20px 60px;color:#eeeeee"> <li><img src="{{ message.email|gravatar(size=48) }}" style="float:left"><p>
+  <br><div style="background:#3e5171;border-radius:20px;padding:25px 20px 20px 60px;color:#eeeeee"> 
+  <li><img src="{{ message.email|gravatar(size=48) }}" style="float:left"><p>
   <strong>&nbsp;<a href="{{ url_for('user_timeline', username=message.username)
       }}" style="font-size:18pt">{{ message.username }}</a></strong>
-  &nbsp;&nbsp;{{ message.text }}
-  <li><img src="{{ message.email|gravatar(size=48) }}"><p>
-  <strong><a href="{{ url_for('user_timeline', username=message.username)
-      }}">{{ message.username }}</a></strong>
+  &nbsp;&nbsp;
       {% for tag in getTags(message.text) %}
         {% if tag[1] == 1 %}
           {{tag[0]}}
@@ -45,7 +43,6 @@ Public Timeline
           <a href="/{{tag[0]}}">@{{tag[0]}}</a>
         {% endif %}
       {% endfor %}
-      <small>&mdash; {{ message.pub_date|datetimeformat }}</small>
   {% if g.user %}
   <small>&mdash; On {{ message.pub_date|datetimeformat }}, {{ message.location }}</small>
   <input type="hidden" value="{{ message.message_id }}" name ="{{ "message_" ~ message.message_id }}">
@@ -62,8 +59,7 @@ Public Timeline
 
     </div>
   {% endif %}
-  <span id={{"plus_one_count_" ~ message.message_id }}> {{ message.plus_one_count }} </span> Plus Ones</li>
-  <div>Status: {{ message.status }}, Assigned to {{ message.assignee }}</div>
+  Assigned to {{ message.assignee }}
 
   {% if g.user %}
   <div class="col-md-5">
