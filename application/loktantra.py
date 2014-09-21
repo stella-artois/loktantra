@@ -249,6 +249,28 @@ def set_comments():
     db = get_db()
     return jsonify(result=message_utils.get_comments(db, message_id, user_id))
 
+@app.route('/_set_status')
+def set_status():
+    message_id = int(request.args.get('message_id'))
+    status = request.args.get('status')
+    user_id = session['user_id']
+    db = get_db()
+    message_author = db.execute('''select * from message where author_id=%d '''% int(user_id))
+    if message_author.fetchone():
+      db.execute('''update message set status = "%s" where message_id = %d
+          ''' % (status, int(message_id)))
+      db.commit()
+      return jsonify(result=status)
+    else:
+      if status is not 'Fixed':
+        db.execute('''update message set status = "%s" where message_id = %d
+          ''' % (status, int(message_id)))
+        db.commit()
+        return jsonify(result=status)
+
+
+    return jsonify(result='')
+
 @app.route('/_set_upvote_classes')
 def set_upvote_classes():
   user_id = int(session['user_id'])

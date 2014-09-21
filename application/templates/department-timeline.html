@@ -13,7 +13,6 @@ Department Timeline
   {% if g.user %}
       <div class=followstatus>
       {% if g.user.user_id == department_user.department_id %}
-        This is you!
       {% elif followed %}
         You are currently following this user.
         <a class=unfollow href="{{ url_for('unfollow_user', username=department_user.username)

@@ -50,11 +50,28 @@ Public Timeline
   <div class="col-md-3">
    <div class="actions btn btn-primary btn-lg btn-block" style="background-color:#16a085"><input type=submit style="background:none;border:none;padding:0px 20px 0px 20px" name="submit" value="Plus One" onclick="plus_one({{ message.message_id }})"> <span id={{"plus_one_count_" ~ message.message_id }}> {{ "(" ~ message.plus_one_count ~ ")" }} </span></div></div>
     <div class="col-md-4">
-   
-               <select class="form-control select select-primary" style="background-color:#16a085;height:43px;color:white;text-align:center;" data-toggle="select">
-            <option value="0">Open</option>
-            <option value="1">Assigned</option>
-            <option value="2">Closed</option>
+      <select class="form-control select select-primary" id="mudda_status_{{ message.message_id }}" onclick="javascript:update_mudda_status({{ message.message_id }})"
+            style="background-color:#16a085;height:43px;color:white;text-align:center;" data-toggle="select">
+            {% if message.status == 'Open' %}
+              <option value="Open" class='active-option' selected=true>Open</option>
+            {% else %}
+              <option value="Open" class='inactive-option'>Open</option>
+            {% endif %}
+
+
+            {% if message.status == 'Assigned' %}
+              <option value="Assigned" class='active-option' selected=true>Assigned</option>
+            {% else %}
+              <option value="Assigned" class='inactive-option'>Assigned</option>
+            {% endif %}
+
+
+            {% if message.status == 'Closed' %}
+              <option value="Closed" class='active-option' selected=true>Closed</option>
+            {% else %}
+              <option value="Closed" class='inactive-option'>Closed</option>
+            {% endif %}
+
           </select>
 
     </div>
@@ -99,6 +116,13 @@ Public Timeline
         }
     });
   }
+  function update_mudda_status(message_id){
+      var status = $('#mudda_status_' + message_id + ' option:selected').text();
+      $.getJSON($SCRIPT_ROOT + '/_set_status', {
+          message_id: message_id,
+          status: status
+      });
+  }
   $(document).ready(function(){
 
     $(".messages li").each(function() {
@@ -129,6 +153,7 @@ Public Timeline
         }
       );
     });
+
 
   });
 </script>
