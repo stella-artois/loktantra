@@ -50,10 +50,10 @@ Public Timeline
     <div class="col-md-4">
       <select class="form-control select select-primary" id="mudda_status_{{ message.message_id }}" onclick="javascript:update_mudda_status({{ message.message_id }})"
             style="background-color:#16a085;height:43px;color:white;text-align:center;" data-toggle="select">
-            {% if message.status == 'Open' %}
-              <option value="Open" class='active-option' selected=true>Open</option>
+            {% if message.status == 'Open' or message.status == 'Verified' %}
+            <option value="{{ message.status }}"class='active-option' selected=true>{{ message.status }}</option>
             {% else %}
-              <option value="Open" class='inactive-option'>Open</option>
+              <option value="{{ message.status }}" class='inactive-option'>Open</option>
             {% endif %}
 
 
@@ -64,10 +64,10 @@ Public Timeline
             {% endif %}
 
 
-            {% if message.status == 'Closed' %}
-              <option value="Closed" class='active-option' selected=true>Closed</option>
+            {% if message.status == 'Fixed' %}
+              <option value="Fixed" class='active-option' selected=true>Fixed</option>
             {% else %}
-              <option value="Closed" class='inactive-option'>Closed</option>
+              <option value="Fixed" class='inactive-option'>Fixed</option>
             {% endif %}
 
       </select>

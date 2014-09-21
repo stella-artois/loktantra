@@ -144,9 +144,13 @@ def user_timeline(username):
             flash('User doesn\'t exist.')
             return redirect(url_for('public_timeline'))
         else:
+            db = get_db()
+            muddas = department_utils.get_muddas(db, department_user['department_id'])
             return render_template('department-timeline.html',
-                messages = department_utils.get_timeline(get_db(), department_user['department_id']),
-                department_user = department_user)
+                messages = department_utils.get_timeline(db, department_user['department_id']),
+                department_user = department_user,
+                assigned_muddas = muddas['assigned'],
+                solved_muddas = muddas['solved'])
 
     else:
         if g.user:

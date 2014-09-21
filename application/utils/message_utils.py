@@ -83,6 +83,7 @@ def plus_one_message(db, message_id, user_id):
   if num_plus_ones >= VALIDATION_THRESHOLD:
     db.execute('''update message set status="Verified" where
         message_id=%d''' % (int(message_id)))
+    db.commit()
 
     message_rows = db.execute('''select text from message where
         message_id=%d''' % (int(message_id)))
@@ -95,8 +96,15 @@ def plus_one_message(db, message_id, user_id):
         break
 
     if dept is not None:
+      rows = db.execute('''select department_id from department where
+          username = "%s"''' % (dept))
+      department = rows.fetchone()[0]
       db.execute('''update message set assignee="%s" where
-          message_id=%d''' % (dept, int(message_id)))
+          message_id=%d''' % (department, int(message_id)))
+      db.commit()
+      db.execute('''update message set status="Assigned" where
+          message_id=%d''' % (int(message_id)))
+      db.commit()
 
 def minus_one_message(db, message_id, user_id):
   """Responsible for minus oning a particular message.

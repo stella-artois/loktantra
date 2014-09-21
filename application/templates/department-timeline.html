@@ -6,8 +6,8 @@ Department Timeline
 <div class="demo-heading-note"><h3>{{ self.title() }}</h3></div>
 <h2>{{ department_user.department_name }}</h2>
   <p>Location: {{ department_user.city }}, {{ department_user.state }}</p>
-  <p>Number of muddas assigned: {{ department_user.num_issues_assigned }}</p>
-  <p>Number of muddas solved: {{ department_user.num_issues_solved }}</p>
+  <p>Number of muddas assigned: {{ assigned_muddas }}</p>
+  <p>Number of muddas solved: {{ solved_muddas }}</p>
   <p>Reputation: {{ reputation }}</p>
   <h2>{{ self.title() }}</h2>
   {% if g.user %}
