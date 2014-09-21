@@ -44,12 +44,16 @@ Public Timeline
   {% endif %}
 </ul>
 
-<script type="text/javascript" >
+<script type="text/javascript">
   function plus_one(message_id) {
     $.getJSON($SCRIPT_ROOT + '/_plus_one', {
       message_id: $('input[name="message_' + message_id + '"]').val(),
       }, function(data) {
        $("#plus_one_count_"+message_id).text(data.result);
+       var li = $('input[name="message_' + message_id + '"]').parent().parent();
+       $(li).removeClass('active');
+       $(li).removeClass('inactive');
+       $(li).addClass(data.status);
     });
   }
   function add_comment(message_id) {

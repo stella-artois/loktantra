@@ -201,9 +201,11 @@ def plus_one():
     db = get_db()
     if message_utils.is_upvoted(db, message_id, user_id):
       message_utils.minus_one_message(db, message_id, user_id)
+      status = "active"
     else:
       message_utils.plus_one_message(db, message_id, user_id)
-    return jsonify(result=len(message_utils.get_plus_ones(db, message_id)))
+      status = "inactive"
+    return jsonify(result=len(message_utils.get_plus_ones(db, message_id)), status=status)
 
 @app.route('/_add_comment')
 def add_comment():
