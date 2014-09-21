@@ -20,5 +20,23 @@ def get_timeline(db, department_id):
 	'''
 
 	cur = db.execute(query, [department_id])
-
 	return cur.fetchall()
+
+def get_muddas(db, department_id):
+	
+	query_assigned = '''
+		select count(*) from message where
+		message.status = 'Assigned' and
+		message.assignee = %s
+	'''%(department_id)
+
+	query_solved = '''
+		select count(*) from message where
+		message.status = 'Fixed' and
+		message.assignee = %s
+	'''%(department_id)
+
+	return {
+		'assigned': db.execute(query_assigned).fetchone()[0],
+		'solved': db.execute(query_solved).fetchone()[0]
+	}

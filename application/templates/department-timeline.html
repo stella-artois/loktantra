@@ -1,32 +1,50 @@
 {% extends "layout.html" %}
 {% block title %}
-Department Timeline
 {% endblock %}
 {% block body %}
-<div class="demo-heading-note"><h3>{{ self.title() }}</h3></div>
-{% if g.user %}
-<div class="tweet-screen">
+<h2>{{ department_user.department_name }}</h2>
+ <div class = row>
+  <div class="col-md-7">  
+ Location: {{ department_user.city }}, {{ department_user.state }}
+</div>
+<div class="col-md-5">
+  {% if g.user %}
+      <div class=followstatus style="float:right;">
+      {% if g.user.user_id == department_user.department_id %}
+        This is you!
+      {% elif followed %}
+        You are currently following this user.
+        <a class=unfollow href="{{ url_for('unfollow_user', username=department_user.username)
+          }}">Unfollow user</a>.
+      {% else %}
+        You are not yet following this user.
+        <a class=follow href="{{ url_for('follow_user', username=department_user.username)
+          }}">Follow user</a>.
+      {% endif %}
+      </div>
+  {% endif %}
+</div>
+</div>
+
+
+  <div class="tweet-screen">
 <div class=twitbox>
+ <div class=row>
+ 
+<div class="demo-heading-note col-md-7"> <h5> Number of muddas assigned: {{ department_user.num_issues_assigned }}</h5></div>
+<div class="demo-heading-note col-md-7"> <h5> Number of muddas solved: {{ department_user.num_issues_solved }}</h5> </div>
+<div class="demo-heading-note col-md-7"> <h5> Reputation: {{ reputation }}</h5></div>
 
-  <h4>Post a mudda, {{ g.user.username }}!</h4>
-  <form action="{{ url_for('add_message') }}" method=post>
-    <p>
-      <input type="text" name="text" size="80" style="float:left;" placeholder="What's on your mind?" class="input-group">
+ </div>
 
-      <input type="text" name="location" style="float:right;" size="10" value="{{ g.user.city }}">(Change location?)
-      
-      <input type="submit" value="Share">
-    </p>
-  </form>
-</div>
-</div>
-{% endif %}
 <ul class=messages>
   {% for message in messages %}
-  <li><img src="{{ message.email|gravatar(size=48) }}"><p>
-  <strong><a href="{{ url_for('user_timeline', username=message.username)
-      }}">{{ message.username }}</a></strong>
-      {% for tag in getTags(message.text) %}
+  <br><div style="background:#3e5171;border-radius:20px;padding:25px 20px 20px 60px;color:#eeeeee">
+  <li><img src="{{ message.email|gravatar(size=48) }}" style="float:left"><p>
+  <strong> &nbsp; <a href="{{ url_for('user_timeline', username=message.username)
+      }}" style="font-size:18pt">{{ message.username }}</a></strong>
+        &nbsp; &nbsp; 
+     {% for tag in getTags(message.text) %}
         {% if tag[1] == 1 %}
           {{tag[0]}}
         {% elif tag[1] == 2 %}
@@ -35,28 +53,12 @@ Department Timeline
           <a href="/{{tag[0]}}">@{{tag[0]}}</a>
         {% endif %}
       {% endfor %}
-      <small>&mdash; {{ message.pub_date|datetimeformat }}</small>
-  {% if g.user %}
-  <small>&mdash; {{ message.pub_date|datetimeformat }}, {{ message.location }}</small>
-  <input type="hidden" value="{{ message.message_id }}" name ="{{ "message_" ~ message.message_id }}">
-  <input type="submit" name="submit" value="Plus One" onclick="plus_one({{ message.message_id }})">
-  {% endif %}
-  <span id={{"plus_one_count_" ~ message.message_id }}> {{ message.plus_one_count }} </span> Plus Ones</li>
+      <small>&mdash; On {{ message.pub_date|datetimeformat }}, {{ message.location }} </small>
+  </li></div>{% endfor %}
+  </ul></div></div>
+<br><br>
 
-  {% if g.user %}
-  <div>
-    <textarea name="{{ "body_" ~ message.message_id }}" placeholder="Add your comment..."></textarea>
-    <input type="submit" name="submit" value="Add comment" onclick="add_comment({{ message.message_id }})">
-  </div>
-  <div class="comments">
-    <ul id="{{ "comments_" ~ message.message_id }}"></ul>
-  </div>
-  {% endif %}
-  {% endfor %}
-  {% if not messages %}
-  <em>There's no message so far.</em>
-  {% endif %}
-</ul>
+
 
 <script type="text/javascript">
   function plus_one(message_id) {
