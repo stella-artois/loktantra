@@ -32,7 +32,15 @@
     <li><img src="{{ message.email|gravatar(size=48) }}"><p>
       <strong><a href="{{ url_for('user_timeline', username=message.username)
       }}">{{ message.username }}</a></strong>
-      {{ message.text }}
+      {% for tag in getTags(message.text) %}
+        {% if tag[1] == 1 %}
+          {{tag[0]}}
+        {% elif tag[1] == 2 %}
+          <a href="{{ url_for('search_hashtag', hashtag=tag[0])}}">#{{tag[0]}}</a>
+        {% else %}
+          <a href="/{{tag[0]}}">@{{tag[0]}}</a>
+        {% endif %}
+      {% endfor %}
       <small>&mdash; {{ message.pub_date|datetimeformat }}</small>
   {% else %}
     <li><em>There's no message so far.</em>
