@@ -6,14 +6,13 @@ Public Timeline
 <div class="demo-heading-note"><h3>{{ self.title() }}</h3></div>
 {% if g.user %}
 <div class="tweet-screen">
-<div class=twitbox>
-
-   <h4 style="text-align:center;padding:20px 20px 30px 20px;">Post a mudda, {{ g.user.username }}!</h4>
+<div style="background:#3e5171;border-radius:20px;padding:25px 30px 40px 40px;color:#eeeeee;margin-bottom:100px">
+   <h4>Post a mudda, {{ g.user.username }}!</h4>
   <form action="{{ url_for('add_message') }}" method=post>
-    <p>
+   <br> 
         <div class=row>
       <div class="col-md-1"></div>
-      <div class="col-md-5"> <input type="text" name="text" size="70" placeholder="What's on your mind?" class="input-group"></div>
+      <div class="col-md-5"> <input type="text" name="text" size="50" placeholder="What's on your mind?" class="input-group"></div>
       <div class="col-md-1"></div>
       <div class="col-md-3">&nbsp; &nbsp;<span style="font-size:10pt">Location</span>
       <input size=15 type="text"  name="location"  value="{{ g.user.city }}">
@@ -21,15 +20,14 @@ Public Timeline
                         &nbsp; &nbsp; &nbsp;
                             <input type=submit value="Submit" style="background:url(../static/post.png);border:2px solid;padding:0px 3px 0px 20px;background-repeat:no-repeat;color:#34495e;border-radius:10px;background-color:#1abc9c;">
 
-      </div>
-     </div> 
+     </div> </div>
       </p>
   </form>
 
 {% endif %}
-<ul class=messages>
+<ul class=messages style="padding-left:0px">
   {% for message in messages %}
-  <br><div style="background:#3e5171;border-radius:20px;padding:25px 20px 20px 60px;color:#eeeeee"> 
+  <br><div style="background:#3e5171;border-radius:20px;padding:25px 20px 20px 20px;color:#eeeeee"> 
   <li><img src="{{ message.email|gravatar(size=48) }}" style="float:left"><p>
   <strong>&nbsp;<a href="{{ url_for('user_timeline', username=message.username)
       }}" style="font-size:18pt">{{ message.username }}</a></strong>
@@ -72,19 +70,17 @@ Public Timeline
               <option value="Closed" class='inactive-option'>Closed</option>
             {% endif %}
 
-          </select>
-
+      </select>
     </div>
   {% endif %}
-  Assigned to {{ message.assignee }}
 
   {% if g.user %}
   <div class="col-md-5">
-    <textarea name="{{ "body_" ~ message.message_id }}" style="font-size:10pt" cols=30 rows=2 placeholder="Add your comment..."></textarea>
-    <input type="submit" value="Post" style="background:url(../static/comment.png);border:none;padding:0px 3px 0px 20px;background-repeat:no-repeat;color:#34495e;border:2px solid;border-radius:10px;background-color:#1abc9c" name="submit" value="Add comment" onclick="add_comment({{ message.message_id }})">
+    <textarea name="{{ "body_" ~ message.message_id }}" style="font-size:10pt;color:#34495e" cols=30 rows=2 placeholder="Add your comment..."></textarea>
+    <input type="submit" value="Post" style="background:url(../static/comment.png);border:none;padding:0px 8px 0px 25px;background-repeat:no-repeat;color:#34495e;border:2px solid;border-radius:10px;background-color:#1abc9c" name="submit" value="Add comment" onclick="add_comment({{ message.message_id }})">
   </div>
-  <div class="comments">
-    <ul id="{{ "comments_" ~ message.message_id }}"></ul>
+  <div class="comments" style="clear: both">
+    <ul id="{{ "comments_" ~ message.message_id }}">
   </div></div>
 </div>  {% endif %}
   {% endfor %}
