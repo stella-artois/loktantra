@@ -21,6 +21,8 @@ create table if not exists department (
   state text not null,
   pw_hash text not null
 );
+/*insert into department values(50000, 'd',1, 2, 2, 'd', 'cow@bullocks.cow', 'd', 'd', 'd');
+delete from department;*/
 
 create table if not exists follower (
   who_id integer,

@@ -7,6 +7,7 @@
   {% endif %}
 {% endblock %}
 {% block body %}
+<<<<<<< HEAD
 <div class="demo-heading-note"><h3>{{ profile_user.full_name }}</h3></div>
 <div class=row>
  <div class="col-md-5">
@@ -30,14 +31,17 @@
   {% endif %} 
   </div>
 </div>
+=======
+  <h2>{{ profile_user.full_name }}</h2>
+  <p>Location: {{ profile_user.city }}, {{ profile_user.state }}</p>
+>>>>>>> origin/profile-page
 
- 
-  <div class="tweet-screen">
+<div class="tweet-screen">
 <div class=twitbox>
  <div class=row>
     <div class="demo-heading-note col-md-7"> <h5> Number of muddas posted: {{ mudda_count }}</h5></div>
     <div class="demo-heading-note col-md-5"> <h5> Reputation: {{ reputation }}</h5></div>
- </div> 
+ </div>
 
 <ul class=messages>
   {% for message in messages %}
@@ -45,7 +49,7 @@
     <li><img src="{{ message.email|gravatar(size=48) }}" style="float:left"><p>
       <strong> &nbsp;<a href="{{ url_for('user_timeline', username=message.username)
       }}" style="font-size:18pt">{{ message.username }}</a></strong>
-    &nbsp; &nbsp;  
+    &nbsp; &nbsp;
      {% for tag in getTags(message.text) %}
         {% if tag[1] == 1 %}
           {{tag[0]}}

@@ -144,9 +144,13 @@ def user_timeline(username):
             flash('User doesn\'t exist.')
             return redirect(url_for('public_timeline'))
         else:
+            db = get_db()
+            muddas = department_utils.get_muddas(db, department_user['department_id'])
             return render_template('department-timeline.html',
-                messages = department_utils.get_timeline(get_db(), department_user['department_id']),
-                department_user = department_user)
+                messages = department_utils.get_timeline(db, department_user['department_id']),
+                department_user = department_user,
+                assigned_muddas = muddas['assigned'],
+                solved_muddas = muddas['solved'])
 
     else:
         if g.user:
@@ -248,6 +252,28 @@ def set_comments():
     user_id = session['user_id']
     db = get_db()
     return jsonify(result=message_utils.get_comments(db, message_id, user_id))
+
+@app.route('/_set_status')
+def set_status():
+    message_id = int(request.args.get('message_id'))
+    status = request.args.get('status')
+    user_id = session['user_id']
+    db = get_db()
+    message_author = db.execute('''select * from message where author_id=%d '''% int(user_id))
+    if message_author.fetchone():
+      db.execute('''update message set status = "%s" where message_id = %d
+          ''' % (status, int(message_id)))
+      db.commit()
+      return jsonify(result=status)
+    else:
+      if status is not 'Fixed':
+        db.execute('''update message set status = "%s" where message_id = %d
+          ''' % (status, int(message_id)))
+        db.commit()
+        return jsonify(result=status)
+
+
+    return jsonify(result='')
 
 @app.route('/_set_upvote_classes')
 def set_upvote_classes():
