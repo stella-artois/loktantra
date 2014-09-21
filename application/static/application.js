@@ -37,11 +37,11 @@ String.prototype.repeat = function (num) {
     }
 
     // Checkboxes and Radio buttons
-    $('[data-toggle="checkbox"]').radiocheck();
-    $('[data-toggle="radio"]').radiocheck();
+    // $('[data-toggle="checkbox"]').radiocheck();
+    // $('[data-toggle="radio"]').radiocheck();
 
     // Tooltips
-    $('[data-toggle=tooltip]').tooltip('show');
+    // $('[data-toggle=tooltip]').tooltip('show');
 
     // jQuery UI Sliders
     var $slider = $('#slider');
