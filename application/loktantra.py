@@ -401,6 +401,16 @@ def search_hashtag():
       order by message.pub_date desc limit %d''' %
       (hashtag, PER_PAGE)))
 
+@app.route('/search-keyword', methods=['GET'])
+def search_keyword():
+  """Searches for messages containing a keyword.
+  """
+  keyword = request.args.get('keyword')
+  if keyword is None:
+    pass
+  messages = search_utils.get_messages_by_keyword(get_db(), keyword)
+  return render_template('timeline.html', messages=messages)
+
 
 @app.route('/logout')
 def logout():
