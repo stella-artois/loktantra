@@ -4,7 +4,7 @@ Public Timeline
 {% endblock %}
 {% block body %}
 <div class="demo-heading-note"><h3>{{ self.title() }}</h3></div>
-{% if 'user_id' in session %}
+{% if 'user_id' in session and g.user %}
 <div class="tweet-screen">
 <div style="background:#3e5171;border-radius:20px;padding:25px 30px 40px 40px;color:#eeeeee;margin-bottom:100px">
    <h4>Post a mudda, {{ g.user.username }}!</h4>
