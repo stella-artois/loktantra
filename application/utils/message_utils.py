@@ -1,5 +1,7 @@
 # I define helper functions for messages.
 
+VALIDATION_THRESHOLD = 1
+
 TAGS = {
 	'NORMAL_TEXT': 1,
 	'HASH_TAG': 2,
@@ -71,6 +73,30 @@ def plus_one_message(db, message_id, user_id):
     db.execute('''update message set plus_one_count=plus_one_count+1
         where message_id=%d''' % int(message_id))
     db.commit()
+
+  # Change status and assigned field, if upvotes >= threshold.
+  plus_ones = db.execute('''select count(*) from plus_one
+      where message_id=%d'''
+      % (int(message_id)))
+  num_plus_ones = plus_ones.fetchone()[0]
+
+  if num_plus_ones >= VALIDATION_THRESHOLD:
+    db.execute('''update message set status="Verified" where
+        message_id=%d''' % (int(message_id)))
+
+    message_rows = db.execute('''select text from message where
+        message_id=%d''' % (int(message_id)))
+    message = message_rows.fetchone()[0]
+    tags = getTags(message)
+    dept = None
+    for tag in tags:
+      if tag[1] == TAGS['PAGE']:
+        dept = tag[0]
+        break
+
+    if dept is not None:
+      db.execute('''update message set assignee="%s" where
+          message_id=%d''' % (dept, int(message_id)))
 
 def minus_one_message(db, message_id, user_id):
   """Responsible for minus oning a particular message.

@@ -24,7 +24,7 @@ def get_messages_by_keyword(db, keyword):
   Returns:
     messages: List of messages ids.
   """
-
-  messages = db.execute('''select message_id from message where
-      tokens like '\%,%s,\%' ''' % (keyword))
+  messages = db.execute('''select message.*, user.* from message, user where
+      user.user_id = message.author_id and
+      message.tokens like '%s' ''' % ('%' + keyword + '%'))
   return messages.fetchall()

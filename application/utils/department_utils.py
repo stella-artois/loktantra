@@ -37,6 +37,6 @@ def get_muddas(db, department_id):
 	'''%(department_id)
 
 	return {
-		'assigned': db.execute(query_assigned).fetchone()[0]
+		'assigned': db.execute(query_assigned).fetchone()[0],
 		'solved': db.execute(query_solved).fetchone()[0]
 	}

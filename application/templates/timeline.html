@@ -42,6 +42,7 @@ Public Timeline
   <input type="submit" name="submit" value="Plus One" onclick="plus_one({{ message.message_id }})">
   {% endif %}
   <span id={{"plus_one_count_" ~ message.message_id }}> {{ message.plus_one_count }} </span> Plus Ones</li>
+  <div>Status: {{ message.status }}, Assigned to {{ message.assignee }}</div>
 
   {% if g.user %}
   <div>
