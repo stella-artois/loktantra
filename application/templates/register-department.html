@@ -49,9 +49,16 @@
           <input name=password2 type="password" class="form-control login-field" value="" placeholder="Password (repeat)" id="login-pass" />
           <label class="login-field-icon fui-lock" for="login-pass"></label>
         </div>
+
+        <div class="form-group">
+          <input type="text" class="form-control login-field" name= follow_tags value="{{ request.form.follow_tags }}" placeholder="Tags to follow!!" id="follow_tags" />
+          <label class="login-field-icon fui-user" for="login-name"></label>
+        </div>
+
       </div>
       <div class="col-md-4"></div>
     </div>
+
     <div class = "row">
       <div class= "col-xs-3"></div>
       <div class= "col-xs-6">
